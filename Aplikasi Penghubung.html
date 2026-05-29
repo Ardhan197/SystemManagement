@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LuxeHub Premium App Connector</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css';" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+          serif: ['Playfair Display', 'serif'],
+        },
+        colors: {
+          gold: {100:'#FDF7E6',200:'#FBE8B3',300:'#F8D880',400:'#F4C45A',500:'#D4AF37',600:'#AA8825',700:'#806415',800:'#5A460E',900:'#362908'},
+          surface: {50:'#2A2A2A',100:'#222222',200:'#1A1A1A',300:'#121212',400:'#0A0A0A'}
+        },
+        boxShadow: {
+          'gold-glow': '0 0 20px rgba(212, 175, 55, 0.15)',
+          'gold-glow-lg': '0 0 30px rgba(212, 175, 55, 0.25)',
+        }
+      }
+    }
+  }
+</script>
+<style>
+:root{
+  --gold:#D4AF37; --gold-2:#F4C45A; --bg:#121212; --bg-2:#1A1A1A; --bg-3:#222; --muted:#9CA3AF; --line:rgba(255,255,255,.08);
+  --danger:#ef4444; --success:#22c55e; --warning:#f59e0b;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font-family:'Inter',sans-serif;background:#121212;color:#E5E5E5;overflow:hidden;
+  background-image:radial-gradient(circle at 50% -10%, rgba(212,175,55,.08), transparent 35%), radial-gradient(circle at 100% 0%, #1a1a1a 0%, #121212 42%, #0a0a0a 100%);
+}
+.font-serif{font-family:'Playfair Display',serif}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:#121212}::-webkit-scrollbar-thumb{background:#333;border-radius:20px}::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+.hidden{display:none!important}.text-gold{color:var(--gold)}.muted{color:var(--muted)}
+.glass-dark{background:rgba(26,26,26,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.05)}
+.premium-card{background:linear-gradient(180deg,rgba(34,34,34,.9),rgba(26,26,26,.96));border:1px solid rgba(255,255,255,.06);box-shadow:0 4px 24px rgba(0,0,0,.32);border-radius:18px}
+.card-hover{transition:all .28s cubic-bezier(.4,0,.2,1)}.card-hover:hover{transform:translateY(-3px);border-color:rgba(212,175,55,.38);box-shadow:0 16px 42px rgba(0,0,0,.45),0 0 22px rgba(212,175,55,.09)}
+.btn{border:0;border-radius:12px;padding:.72rem 1rem;font-size:10px;text-transform:uppercase;letter-spacing:.15em;font-weight:800;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;line-height:1.2;white-space:nowrap}
+.btn-gold{background:var(--gold);color:#121212;box-shadow:0 0 20px rgba(212,175,55,.18)}.btn-gold:hover{background:var(--gold-2);transform:translateY(-1px)}
+.btn-outline{background:rgba(255,255,255,.03);color:#D1D5DB;border:1px solid rgba(255,255,255,.12)}.btn-outline:hover{border-color:rgba(212,175,55,.45);color:white;background:rgba(212,175,55,.08)}
+.btn-danger{background:rgba(239,68,68,.10);color:#fca5a5;border:1px solid rgba(239,68,68,.25)}.btn-danger:hover{background:rgba(239,68,68,.20);color:white}
+.icon-btn{width:34px;height:34px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#9CA3AF;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s}.icon-btn:hover{border-color:rgba(212,175,55,.45);color:var(--gold)}
+.field{width:100%;padding:.78rem .9rem;background:#202020;border:1px solid rgba(255,255,255,.10);border-radius:14px;color:#fff;outline:none;font-size:12px;transition:.2s}.field:focus{border-color:var(--gold);box-shadow:0 0 0 1px rgba(212,175,55,.32)}
+select.field{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:2.3rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' viewBox='0 0 20 20'%3E%3Cpath d='M5 7.5l5 5 5-5' stroke='%23D4AF37' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;background-size:18px}
+select.field option{background:#1A1A1A;color:white}.label-premium{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:#A1A1AA;margin-bottom:.45rem}.hint{font-size:10px;color:#737373;line-height:1.5}
+.app-shell{height:100vh;display:flex;overflow:hidden}.sidebar-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);z-index:40;opacity:0;pointer-events:none;transition:.2s}.sidebar-backdrop.show{opacity:1;pointer-events:auto}
+.sidebar{width:240px;position:fixed;inset:0 auto 0 0;z-index:50;background:#1A1A1A;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .28s ease;box-shadow:20px 0 45px rgba(0,0,0,.45)}
+.sidebar.show{transform:translateX(0)}.sidebar-header{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}.brand{display:flex;align-items:center;gap:12px;min-width:0}.brand-icon{width:34px;height:34px;border-radius:14px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.35);display:flex;align-items:center;justify-content:center;color:var(--gold);box-shadow:0 0 16px rgba(212,175,55,.12)}
+.sidebar-nav-wrap{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:14px 8px;overscroll-behavior:contain}.sidebar-nav-wrap::-webkit-scrollbar{width:4px}.sidebar-nav-wrap::-webkit-scrollbar-thumb{background:rgba(212,175,55,.38);border-radius:99px}
+.nav-link{width:100%;display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:0 14px 14px 0;border:0;border-left:2px solid transparent;background:transparent;color:#9CA3AF;text-align:left;cursor:pointer;transition:.2s;margin-bottom:4px;font-size:11px;letter-spacing:.04em}.nav-link i{width:18px;text-align:center}.nav-link:hover{background:rgba(255,255,255,.04);color:white}.nav-link.active{background:linear-gradient(90deg,rgba(212,175,55,.16),rgba(212,175,55,.03));border-left-color:var(--gold);color:var(--gold)}
+.sidebar-footer{flex-shrink:0;padding:14px;border-top:1px solid rgba(255,255,255,.06);background:linear-gradient(0deg,rgba(34,34,34,.76),transparent)}.profile-pill{display:flex;align-items:center;gap:10px;padding:10px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;overflow:hidden}.topbar{height:68px;display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(18,18,18,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);position:sticky;top:0;z-index:20}.search-wrap{position:relative;flex:1;max-width:560px}.search-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:12px;color:#6B7280}.search-input{width:100%;height:40px;padding:0 14px 0 38px;background:#1f1f1f;border:1px solid rgba(255,255,255,.1);border-radius:999px;color:white;outline:none;font-size:12px}.status-pill{height:40px;display:flex;align-items:center;gap:9px;padding:0 14px;border-radius:999px;background:rgba(34,197,94,.10);border:1px solid rgba(34,197,94,.22);color:#86efac;font-size:10px;text-transform:uppercase;letter-spacing:.15em;font-weight:800}.content{flex:1;overflow-y:auto;padding:24px;background:linear-gradient(180deg,rgba(18,18,18,.4),rgba(10,10,10,.15));position:relative}.view{display:none}.view.active{display:block;animation:fadeIn .28s ease-out}.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.25em;color:var(--gold);margin-bottom:6px}.page-title{font-family:'Playfair Display',serif;font-size:30px;line-height:1.1;font-weight:700;color:white;margin:0}.page-desc{font-size:12px;color:#85858f;line-height:1.55;margin:8px 0 0;max-width:780px}
+.grid{display:grid;gap:14px}.summary-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px}.summary-card{padding:18px;border-radius:18px;background:linear-gradient(160deg,rgba(42,42,42,.86),rgba(26,26,26,.95));border:1px solid rgba(255,255,255,.06)}.summary-card .num{font-size:28px;font-family:'Playfair Display',serif;color:white;font-weight:700}.summary-card .lbl{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#9CA3AF;margin-top:4px}.summary-card .ico{width:38px;height:38px;border-radius:14px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.2);color:var(--gold);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.app-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.app-card{padding:18px;min-height:204px;display:flex;flex-direction:column;position:relative;overflow:hidden}.app-card:before{content:"";position:absolute;inset:-60px auto auto -50px;width:120px;height:120px;border-radius:999px;background:rgba(212,175,55,.08);filter:blur(20px)}.app-icon{width:48px;height:48px;border-radius:18px;background:linear-gradient(135deg,rgba(212,175,55,.18),rgba(255,255,255,.04));border:1px solid rgba(212,175,55,.28);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:20px;margin-bottom:14px;position:relative}.app-title{font-size:15px;color:white;font-weight:700;margin:0 0 4px}.app-url{font-size:10px;color:#737373;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:8px}.app-desc{font-size:11px;color:#A1A1AA;line-height:1.5;min-height:32px;margin:0 0 12px}.card-actions{margin-top:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.tag{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:#A1A1AA}.tag.active{color:#86efac;border-color:rgba(34,197,94,.24);background:rgba(34,197,94,.08)}.tag.inactive{color:#fca5a5;border-color:rgba(239,68,68,.2);background:rgba(239,68,68,.08)}
+.table-wrap{overflow:auto}.data-table{width:100%;border-collapse:collapse;white-space:nowrap}.data-table th{padding:13px 16px;text-align:left;color:var(--gold);font-size:10px;text-transform:uppercase;letter-spacing:.16em;background:rgba(34,34,34,.55);font-weight:600}.data-table td{padding:13px 16px;border-top:1px solid rgba(255,255,255,.06);font-size:12px;color:#E5E5E5}.data-table tr:hover td{background:rgba(212,175,55,.04)}
+.form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.span-2{grid-column:span 2}.span-4{grid-column:span 4}.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.70);backdrop-filter:blur(8px);z-index:80;padding:16px}.modal.show{display:flex}.modal-box{width:min(720px,100%);max-height:90vh;overflow:auto;border-radius:22px;background:#1A1A1A;border:1px solid rgba(255,255,255,.08);box-shadow:0 30px 80px rgba(0,0,0,.65)}.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.06)}.modal-body{padding:20px}.toast{position:fixed;right:16px;bottom:16px;z-index:120;display:flex;flex-direction:column;gap:10px}.toast-item{padding:13px 16px;border-radius:14px;background:#1f1f1f;border:1px solid rgba(255,255,255,.1);box-shadow:0 15px 45px rgba(0,0,0,.38);font-size:12px;color:white;min-width:260px}.toast-item.success{border-color:rgba(34,197,94,.3)}.toast-item.error{border-color:rgba(239,68,68,.3)}
+.login-screen{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at top,rgba(212,175,55,.11),transparent 35%),#0A0A0A}.login-card{width:min(470px,100%);padding:28px;border-radius:28px;background:linear-gradient(180deg,rgba(34,34,34,.90),rgba(18,18,18,.98));border:1px solid rgba(212,175,55,.18);box-shadow:0 30px 90px rgba(0,0,0,.75),0 0 40px rgba(212,175,55,.08)}.login-logo{width:58px;height:58px;border-radius:22px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.34);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:24px;margin-bottom:18px}.login-title{font-family:'Playfair Display',serif;font-size:31px;font-weight:700;color:white;margin:0}.login-sub{font-size:12px;color:#A1A1AA;line-height:1.6;margin:10px 0 22px}.empty-state{padding:36px;text-align:center;color:#8A8A8A}.empty-state i{font-size:34px;color:rgba(212,175,55,.42);margin-bottom:12px}.kbd{font-size:10px;color:#D4AF37;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.18);padding:3px 7px;border-radius:7px}.copy-chip{border:1px solid rgba(212,175,55,.18);background:rgba(212,175,55,.07);color:var(--gold);border-radius:99px;padding:7px 10px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.viewer-shell{height:calc(100vh - 148px);min-height:560px;display:flex;flex-direction:column;overflow:hidden}.viewer-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(34,34,34,.62)}.viewer-title-wrap{display:flex;align-items:center;gap:12px;min-width:0}.viewer-app-icon{width:40px;height:40px;border-radius:15px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.28);display:flex;align-items:center;justify-content:center;color:var(--gold);flex-shrink:0}.viewer-app-title{font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.viewer-mask{font-size:10px;color:#9CA3AF;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.viewer-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}.viewer-frame-wrap{flex:1;min-height:0;background:#0A0A0A;position:relative}.viewer-frame{width:100%;height:100%;border:0;background:#fff;display:block}.viewer-warning{margin:12px 16px 0;padding:11px 12px;border-radius:14px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.20);color:#fcd34d;font-size:11px;line-height:1.5}.private-link-label{display:inline-flex;align-items:center;gap:6px;color:#737373;font-size:10px;margin-bottom:8px}.private-link-label i{color:var(--gold)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media (min-width:1024px){.sidebar{position:relative;transform:none;flex-shrink:0}.sidebar-backdrop{display:none}.main{width:calc(100% - 240px)}}
+@media (max-width:1180px){.summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.app-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.span-4{grid-column:span 2}}
+@media (max-width:760px){body{overflow:hidden}.topbar{height:auto;min-height:68px;flex-wrap:wrap;padding:12px}.search-wrap{order:4;max-width:none;flex-basis:100%}.status-pill span{display:none}.content{padding:16px}.page-head{display:block}.page-head .btn{width:100%;margin-top:14px}.page-title{font-size:26px}.summary-grid,.app-grid,.form-grid{grid-template-columns:1fr}.span-2,.span-4{grid-column:span 1}.app-card{min-height:auto}.table-wrap{border-radius:16px}.sidebar{width:86vw;max-width:280px}.hidden-mobile{display:none!important}.toast{left:16px;right:16px}.toast-item{min-width:0}.btn{width:100%}.card-actions .btn,.card-actions .icon-btn{width:auto}.data-table th,.data-table td{padding:12px}.login-card{padding:22px}.modal{align-items:flex-end;padding:0}.modal-box{border-radius:22px 22px 0 0;max-height:92vh}.viewer-shell{height:calc(100vh - 170px);min-height:480px}.viewer-toolbar{align-items:flex-start;flex-direction:column}.viewer-actions{width:100%}.viewer-actions .btn{width:100%}}
+</style>
+</head>
+<body>
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo"><i class="fa-solid fa-layer-group"></i></div>
+    <p class="eyebrow">Premium App Connector</p>
+    <h1 class="login-title">LuxeHub Access Portal</h1>
+    <p class="login-sub">Portal pintas untuk menghubungkan aplikasi kerja dalam satu tampilan premium. Sesi login tidak disimpan permanen di browser.</p>
+    <form id="loginForm" class="grid" autocomplete="off">
+      <div><label class="label-premium">Username</label><input id="loginUsername" class="field" autocomplete="off" placeholder="owner" required /></div>
+      <div><label class="label-premium">Password</label><input id="loginPassword" class="field" type="password" autocomplete="new-password" placeholder="owner123" required /></div>
+      <button class="btn btn-gold" type="submit"><i class="fa-solid fa-right-to-bracket"></i> Masuk Portal</button>
+    </form>
+    <p class="hint" style="margin-top:14px"><i class="fa-solid fa-shield-halved text-gold"></i> Default: <span class="kbd">owner</span> / <span class="kbd">owner123</span>. Ganti password sebelum dipakai operasional.</p>
+  </div>
+</div>
+<div id="appShell" class="app-shell hidden">
+  <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon"><i class="fa-solid fa-link"></i></div>
+        <div style="min-width:0"><div class="font-serif" style="font-weight:700;font-size:17px;letter-spacing:.14em;color:#fff">Luxe<span class="text-gold">Hub</span></div><div class="hint" style="font-size:9px;letter-spacing:.15em;text-transform:uppercase">Connector</div></div>
+      </div>
+      <button id="closeSidebarBtn" class="icon-btn" type="button"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sidebar-nav-wrap" id="sidebarNavWrap">
+      <button class="nav-link active" data-view="dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></button>
+      <button class="nav-link" data-view="launcher"><i class="fa-solid fa-rocket"></i><span>App Launcher</span></button>
+      <button class="nav-link" data-view="viewer"><i class="fa-solid fa-window-maximize"></i><span>App Viewer</span></button>
+      <button class="nav-link" data-view="manage"><i class="fa-solid fa-grid-2"></i><span>Kelola Aplikasi</span></button>
+      <button class="nav-link" data-view="categories"><i class="fa-solid fa-tags"></i><span>Kategori</span></button>
+      <button class="nav-link" data-view="activity"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat Buka</span></button>
+      <button class="nav-link" data-view="backup"><i class="fa-solid fa-database"></i><span>Backup & Import</span></button>
+      <button class="nav-link" data-view="settings"><i class="fa-solid fa-sliders"></i><span>Pengaturan</span></button>
+    </div>
+    <div class="sidebar-footer">
+      <div class="profile-pill">
+        <div class="brand-icon" style="width:32px;height:32px;border-radius:13px"><i class="fa-solid fa-crown"></i></div>
+        <div style="min-width:0;flex:1"><div style="font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="sidebarUser">Owner Portal</div><div style="font-size:9px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase">Secure Session</div></div>
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <button id="openSidebarBtn" class="icon-btn" type="button"><i class="fa-solid fa-bars-staggered"></i></button>
+      <div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input id="globalSearch" class="search-input" placeholder="Cari aplikasi, kategori, URL..." /></div>
+      <div class="status-pill"><span></span><i class="fa-solid fa-cloud"></i> Portal Aktif</div>
+      <div class="hidden-mobile" style="text-align:right;border-left:1px solid rgba(255,255,255,.08);padding-left:16px"><div id="currentDate" style="font-size:11px;color:#D1D5DB"></div><div id="currentTime" class="font-serif" style="font-size:11px;color:var(--gold);font-style:italic"></div></div>
+      <button class="icon-btn" title="Logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </header>
+    <section class="content">
+      <div id="dashboardView" class="view active"></div>
+      <div id="launcherView" class="view"></div>
+      <div id="viewerView" class="view"></div>
+      <div id="manageView" class="view"></div>
+      <div id="categoriesView" class="view"></div>
+      <div id="activityView" class="view"></div>
+      <div id="backupView" class="view"></div>
+      <div id="settingsView" class="view"></div>
+    </section>
+  </main>
+</div>
+<div id="appModal" class="modal"><div class="modal-box"><div class="modal-head"><div><h3 id="modalTitle" class="font-serif" style="font-size:22px;color:#fff;margin:0">Tambah Aplikasi</h3><p class="hint" style="margin:6px 0 0">Simpan shortcut aplikasi kerja tanpa menyimpan password aplikasi tersebut.</p></div><button class="icon-btn" onclick="closeAppModal()"><i class="fa-solid fa-xmark"></i></button></div><div class="modal-body"><form id="appForm" class="form-grid"><input type="hidden" id="appId"><div class="span-2"><label class="label-premium">Nama Aplikasi</label><input id="appName" class="field" required placeholder="Contoh: LuxeHR"></div><div class="span-2"><label class="label-premium">URL Aplikasi</label><input id="appUrl" class="field" required placeholder="https://..." inputmode="url"></div><div><label class="label-premium">Kategori</label><select id="appCategory" class="field"></select></div><div><label class="label-premium">Status</label><select id="appStatus" class="field"><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></div><div><label class="label-premium">Ikon</label><select id="appIcon" class="field"><option value="fa-layer-group">Layer</option><option value="fa-user-tie">HR</option><option value="fa-table">Sheet</option><option value="fa-palette">Design</option><option value="fa-envelope">Email</option><option value="fa-comments">Chat</option><option value="fa-wallet">Finance</option><option value="fa-chart-line">Analytics</option><option value="fa-database">Database</option><option value="fa-globe">Website</option></select></div><div><label class="label-premium">Favorit</label><select id="appFavorite" class="field"><option value="false">Tidak</option><option value="true">Ya</option></select></div><div class="span-4"><label class="label-premium">Deskripsi Singkat</label><textarea id="appDescription" class="field" rows="3" placeholder="Fungsi aplikasi / catatan penggunaan"></textarea></div><div class="span-4" style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap"><button class="btn btn-outline" type="button" onclick="closeAppModal()">Batal</button><button class="btn btn-gold" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan Aplikasi</button></div></form></div></div></div>
+<div id="qrModal" class="modal"><div class="modal-box" style="width:min(430px,100%)"><div class="modal-head"><div><h3 class="font-serif" style="font-size:22px;color:white;margin:0">QR Link</h3><p id="qrTitle" class="hint" style="margin:6px 0 0"></p></div><button class="icon-btn" onclick="closeQrModal()"><i class="fa-solid fa-xmark"></i></button></div><div class="modal-body" style="text-align:center"><img id="qrImage" alt="QR Code" style="width:220px;height:220px;border-radius:18px;background:white;padding:10px;margin:auto;display:block"><p id="qrUrl" class="hint" style="word-break:break-all;margin-top:14px"></p><button class="btn btn-gold" style="margin-top:12px" onclick="copyQrUrl()"><i class="fa-solid fa-copy"></i> Salin Link</button></div></div></div>
+<div id="toast" class="toast"></div>
+<script>
+const STORAGE_KEY = 'luxehub_portal_v1';
+const SETTINGS_KEY = 'luxehub_settings_v1';
+const USER_HASH_KEY = 'luxehub_owner_hash_v1';
+const DEFAULT_OWNER_HASH = '43a0d17178a9d26c9e0fe9a74b0b45e38d32f27aed887a008a54bf6e033bf7b9';
+let state = { apps: [], categories: [], activity: [] };
+let settings = { companyName:'LuxeHub', portalTitle:'Premium App Connector', openMode:'viewer', lockInactive:true };
+let sessionUser = null;
+let editingAppId = null;
+let currentQrUrl = '';
+let currentViewerAppId = null;
+let currentView = 'dashboard';
+let filterCategory = 'all';
+
+const defaultCategories = ['HR','Finance','Marketing','Design','Communication','Database','Utility'];
+const defaultApps = [
+  {id:uid(),name:'LuxeHR',url:'https://example.com/luxehr',category:'HR',status:'Aktif',icon:'fa-user-tie',favorite:true,description:'Aplikasi manajemen karyawan, absensi, payroll, dan hak akses.',createdAt:nowISO(),updatedAt:nowISO()},
+  {id:uid(),name:'Google Sheet Database',url:'https://sheets.google.com',category:'Database',status:'Aktif',icon:'fa-table',favorite:true,description:'Akses cepat database Google Sheet dan laporan.',createdAt:nowISO(),updatedAt:nowISO()},
+  {id:uid(),name:'Canva',url:'https://www.canva.com',category:'Design',status:'Aktif',icon:'fa-palette',favorite:false,description:'Desain konten, presentasi, dan materi visual.',createdAt:nowISO(),updatedAt:nowISO()},
+  {id:uid(),name:'Gmail',url:'https://mail.google.com',category:'Communication',status:'Aktif',icon:'fa-envelope',favorite:false,description:'Email operasional dan komunikasi bisnis.',createdAt:nowISO(),updatedAt:nowISO()},
+  {id:uid(),name:'WhatsApp Web',url:'https://web.whatsapp.com',category:'Communication',status:'Aktif',icon:'fa-comments',favorite:false,description:'Komunikasi chat cepat dengan tim dan pelanggan.',createdAt:nowISO(),updatedAt:nowISO()},
+  {id:uid(),name:'Google Drive',url:'https://drive.google.com',category:'Utility',status:'Aktif',icon:'fa-database',favorite:false,description:'Penyimpanan dokumen, arsip, dan file kerja.',createdAt:nowISO(),updatedAt:nowISO()}
+];
+
+function $(id){ return document.getElementById(id); }
+function uid(){ return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
+function nowISO(){ return new Date().toISOString(); }
+function esc(str){ return String(str ?? '').replace(/[&<>'"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m])); }
+function normalizeUrl(url){
+  const v = String(url || '').trim();
+  if(!v) return '';
+  if(/^https?:\/\//i.test(v)) return v;
+  return 'https://' + v;
+}
+async function sha256(text){
+  const bytes = new TextEncoder().encode(String(text));
+  const hashBuffer = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function saveSettings(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ state = {...state, ...JSON.parse(raw)}; }
+  }catch(e){ console.warn(e); }
+  if(!Array.isArray(state.categories) || !state.categories.length) state.categories = [...defaultCategories];
+  if(!Array.isArray(state.apps) || !state.apps.length) state.apps = [...defaultApps];
+  if(!Array.isArray(state.activity)) state.activity = [];
+  saveState();
+}
+function loadSettings(){
+  try{ const raw = localStorage.getItem(SETTINGS_KEY); if(raw) settings = {...settings, ...JSON.parse(raw)}; }catch(e){ console.warn(e); }
+}
+function toast(message, type='success'){
+  const box = document.createElement('div');
+  box.className = `toast-item ${type}`;
+  box.textContent = message;
+  $('toast').appendChild(box);
+  setTimeout(()=>{ box.style.opacity='0'; box.style.transform='translateY(10px)'; }, 2600);
+  setTimeout(()=> box.remove(), 3100);
+}
+function updateClock(){
+  const d = new Date();
+  $('currentDate').textContent = d.toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  $('currentTime').textContent = d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+function setShellVisible(show){ $('loginScreen').classList.toggle('hidden', show); $('appShell').classList.toggle('hidden', !show); }
+async function login(username, password){
+  const cleanUser = String(username || '').trim().toLowerCase();
+  const storedHash = localStorage.getItem(USER_HASH_KEY) || DEFAULT_OWNER_HASH;
+  const passHash = await sha256(password || '');
+  if(cleanUser === 'owner' && passHash === storedHash){
+    sessionUser = { username:'owner', name:'Owner Portal', role:'Owner', loginAt:Date.now() };
+    $('sidebarUser').textContent = 'Owner Portal';
+    setShellVisible(true);
+    renderAll();
+    toast('Login berhasil. Sesi aktif hanya untuk tab ini.');
+    return true;
+  }
+  return false;
+}
+function logout(){ sessionUser = null; setShellVisible(false); $('loginPassword').value=''; toast('Sesi logout.', 'success'); }
+function requireSession(){ if(!sessionUser){ setShellVisible(false); return false; } return true; }
+function switchView(view){
+  if(!requireSession()) return;
+  currentView = view;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  $(`${view}View`).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
+  closeSidebar();
+  renderAll();
+}
+function openSidebar(){ $('sidebar').classList.add('show'); $('sidebarBackdrop').classList.add('show'); const active = document.querySelector('.nav-link.active'); if(active) active.scrollIntoView({block:'nearest'}); }
+function closeSidebar(){ $('sidebar').classList.remove('show'); $('sidebarBackdrop').classList.remove('show'); }
+function getFilteredApps(){
+  const q = $('globalSearch') ? $('globalSearch').value.toLowerCase().trim() : '';
+  return state.apps.filter(app => {
+    const matchQ = !q || [app.name, app.url, app.category, app.description].some(x => String(x || '').toLowerCase().includes(q));
+    const matchCat = filterCategory === 'all' || app.category === filterCategory;
+    const matchStatus = !settings.lockInactive || app.status === 'Aktif' || currentView === 'manage';
+    return matchQ && matchCat && matchStatus;
+  });
+}
+function summaryStats(){
+  const total = state.apps.length;
+  const active = state.apps.filter(a => a.status === 'Aktif').length;
+  const fav = state.apps.filter(a => a.favorite).length;
+  return {total, active, fav, categories:state.categories.length};
+}
+function summaryCards(){
+  const s = summaryStats();
+  return `<div class="summary-grid grid">
+    ${summaryCard('fa-layer-group', s.total, 'Total Aplikasi')}
+    ${summaryCard('fa-circle-check', s.active, 'Aplikasi Aktif')}
+    ${summaryCard('fa-star', s.fav, 'Favorit')}
+    ${summaryCard('fa-tags', s.categories, 'Kategori')}
+  </div>`;
+}
+function summaryCard(icon,num,label){ return `<div class="summary-card"><div class="ico"><i class="fa-solid ${icon}"></i></div><div class="num">${esc(num)}</div><div class="lbl">${esc(label)}</div></div>`; }
+function appCard(app){
+  const disabled = app.status !== 'Aktif';
+  return `<article class="premium-card card-hover app-card">
+    <div style="display:flex;justify-content:space-between;gap:10px;position:relative">
+      <div class="app-icon"><i class="fa-solid ${esc(app.icon || 'fa-layer-group')}"></i></div>
+      <button class="icon-btn" title="Favorit" onclick="toggleFavorite('${app.id}')"><i class="fa-${app.favorite?'solid':'regular'} fa-star" style="color:${app.favorite?'var(--gold)':'#9CA3AF'}"></i></button>
+    </div>
+    <h3 class="app-title">${esc(app.name)}</h3>
+    <div class="private-link-label"><i class="fa-solid fa-shield-halved"></i> Link disembunyikan • akses via portal</div>
+    <p class="app-desc">${esc(app.description || 'Tidak ada deskripsi.')}</p>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"><span class="tag"><i class="fa-solid fa-tag"></i>${esc(app.category)}</span><span class="tag ${disabled?'inactive':'active'}">${esc(app.status)}</span></div>
+    <div class="card-actions">
+      <button class="btn btn-gold" ${disabled?'disabled style="opacity:.45;cursor:not-allowed"':''} onclick="openApp('${app.id}')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka via Portal</button>
+    </div>
+  </article>`;
+}
+function pageHead(eyebrow,title,desc,button=''){
+  return `<div class="page-head"><div><p class="eyebrow">${esc(eyebrow)}</p><h2 class="page-title">${esc(title)}</h2><p class="page-desc">${esc(desc)}</p></div>${button}</div>`;
+}
+function categoryFilter(){
+  return `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+    <button class="copy-chip" onclick="setCategoryFilter('all')">Semua</button>
+    ${state.categories.map(c=>`<button class="copy-chip" onclick="setCategoryFilter('${esc(c)}')">${esc(c)}</button>`).join('')}
+  </div>`;
+}
+function setCategoryFilter(cat){ filterCategory = cat; renderAll(); }
+function renderDashboard(){
+  const favApps = state.apps.filter(a => a.favorite && a.status === 'Aktif').slice(0,4);
+  const recent = state.activity.slice(0,6);
+  $('dashboardView').innerHTML = pageHead('Executive Connector','Dashboard Aplikasi Terhubung','Satu portal untuk membuka aplikasi kerja, database, komunikasi, desain, dan tools operasional tanpa mencari link satu per satu.',`<button class="btn btn-gold" onclick="openAppModal()"><i class="fa-solid fa-plus"></i> Tambah Aplikasi</button>`) + summaryCards() +
+  `<div class="grid" style="grid-template-columns:minmax(0,2fr) minmax(320px,1fr)">
+    <div class="premium-card" style="padding:18px"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px"><div><h3 class="font-serif" style="font-size:20px;color:white;margin:0">Favorit Cepat</h3><p class="hint">Aplikasi yang paling sering dipakai.</p></div><button class="btn btn-outline" onclick="switchView('launcher')">Lihat Semua</button></div><div class="app-grid grid">${favApps.length ? favApps.map(appCard).join('') : emptyState('Belum ada favorit','Tandai aplikasi sebagai favorit agar tampil di sini.')}</div></div>
+    <div class="premium-card" style="padding:18px"><h3 class="font-serif" style="font-size:20px;color:white;margin:0">Aktivitas Terakhir</h3><p class="hint">Riwayat link yang dibuka dari portal.</p><div style="margin-top:12px">${recent.length ? recent.map(a=>`<div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.06)"><div style="font-weight:700;color:white;font-size:12px">${esc(a.name)}</div><div class="hint">${esc(formatDateTime(a.time))}</div></div>`).join('') : emptyState('Belum ada aktivitas','Riwayat muncul setelah aplikasi dibuka.')}</div></div>
+  </div>`;
+}
+function renderLauncher(){
+  const apps = getFilteredApps();
+  $('launcherView').innerHTML = pageHead('Quick Launch','App Launcher','Buka aplikasi eksternal dari satu dashboard. Portal ini hanya menyimpan URL shortcut, bukan password aplikasi eksternal.',`<button class="btn btn-gold" onclick="openAppModal()"><i class="fa-solid fa-plus"></i> Aplikasi Baru</button>`) + categoryFilter() + `<div class="app-grid grid">${apps.length ? apps.map(appCard).join('') : emptyState('Tidak ada aplikasi','Coba ubah pencarian/kategori atau tambahkan aplikasi baru.')}</div>`;
+}
+function renderViewer(){
+  const app = state.apps.find(a => a.id === currentViewerAppId && a.status === 'Aktif');
+  if(!app){
+    const apps = getFilteredApps();
+    $('viewerView').innerHTML = pageHead('Private Access','App Viewer','Pilih aplikasi untuk dibuka di dalam portal. Address bar browser tetap berada di halaman portal, bukan URL aplikasi tujuan.',`<button class="btn btn-outline" onclick="switchView('launcher')"><i class="fa-solid fa-arrow-left"></i> Kembali ke Launcher</button>`) +
+    `<div class="viewer-warning"><i class="fa-solid fa-circle-info"></i> Catatan: mode viewer menyamarkan URL dari address bar dan tampilan launcher, tetapi tidak bisa menyembunyikan URL dari user teknis yang membuka developer tools. Untuk proteksi penuh wajib memakai backend/reverse proxy dan autentikasi server.</div>` +
+    categoryFilter() + `<div class="app-grid grid">${apps.length ? apps.map(appCard).join('') : emptyState('Belum ada aplikasi aktif','Tambahkan aplikasi atau aktifkan aplikasi terlebih dahulu.')}</div>`;
+    return;
+  }
+  $('viewerView').innerHTML = pageHead('Private Access','App Viewer','Aplikasi dibuka di dalam portal agar user tidak berpindah ke address bar aplikasi tujuan.',`<button class="btn btn-outline" onclick="switchView('launcher')"><i class="fa-solid fa-arrow-left"></i> Launcher</button>`) +
+  `<div class="premium-card viewer-shell">
+    <div class="viewer-toolbar">
+      <div class="viewer-title-wrap">
+        <div class="viewer-app-icon"><i class="fa-solid ${esc(app.icon || 'fa-layer-group')}"></i></div>
+        <div style="min-width:0">
+          <div class="viewer-app-title">${esc(app.name)}</div>
+          <div class="viewer-mask"><i class="fa-solid fa-lock"></i> URL aplikasi disembunyikan dari tampilan user</div>
+        </div>
+      </div>
+      <div class="viewer-actions">
+        <button class="btn btn-outline" onclick="reloadViewer()"><i class="fa-solid fa-rotate-right"></i> Reload</button>
+        <button class="btn btn-outline" onclick="clearViewer()"><i class="fa-solid fa-table-cells-large"></i> Pilih App</button>
+        <button class="btn btn-danger" onclick="openViewerFallback()"><i class="fa-solid fa-triangle-exclamation"></i> Fallback Tab</button>
+      </div>
+    </div>
+    <div class="viewer-warning"><i class="fa-solid fa-shield-halved"></i> Jika halaman kosong/menolak tampil, berarti aplikasi tersebut memblokir iframe melalui kebijakan keamanan. Gunakan fallback tab, atau buat versi backend/reverse proxy jika URL harus benar-benar diproteksi.</div>
+    <div class="viewer-frame-wrap">
+      <iframe id="appViewerFrame" class="viewer-frame" src="${esc(app.url)}" referrerpolicy="no-referrer" allow="clipboard-read; clipboard-write; fullscreen; geolocation; camera; microphone"></iframe>
+    </div>
+  </div>`;
+}
+function renderManage(){
+  const apps = getFilteredApps();
+  $('manageView').innerHTML = pageHead('Application Registry','Kelola Aplikasi','Tambah, edit, nonaktifkan, atau hapus shortcut aplikasi kerja. Gunakan status Nonaktif untuk menyembunyikan akses tanpa menghapus data.',`<button class="btn btn-gold" onclick="openAppModal()"><i class="fa-solid fa-plus"></i> Tambah</button>`) +
+  `<div class="premium-card table-wrap"><table class="data-table"><thead><tr><th>Aplikasi</th><th>Kategori</th><th>Status</th><th>URL</th><th>Favorit</th><th style="text-align:right">Aksi</th></tr></thead><tbody>${apps.map(app=>`<tr><td><b>${esc(app.name)}</b><div class="hint">${esc(app.description || '')}</div></td><td>${esc(app.category)}</td><td><span class="tag ${app.status==='Aktif'?'active':'inactive'}">${esc(app.status)}</span></td><td style="max-width:280px;overflow:hidden;text-overflow:ellipsis">${esc(app.url)}</td><td>${app.favorite?'Ya':'Tidak'}</td><td style="text-align:right"><button class="icon-btn" onclick="openApp('${app.id}')"><i class="fa-solid fa-arrow-up-right-from-square"></i></button> <button class="icon-btn" onclick="editApp('${app.id}')"><i class="fa-solid fa-pen"></i></button> <button class="icon-btn" onclick="deleteApp('${app.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('') || `<tr><td colspan="6">${emptyState('Tidak ada data','Tambahkan aplikasi untuk mulai memakai portal.')}</td></tr>`}</tbody></table></div>`;
+}
+function renderCategories(){
+  $('categoriesView').innerHTML = pageHead('Catalog Grouping','Kategori Aplikasi','Kelompokkan aplikasi agar launcher lebih rapi dan mudah dipakai oleh user/owner.') +
+  `<div class="grid" style="grid-template-columns:minmax(0,1fr) minmax(0,2fr)"><div class="premium-card" style="padding:18px"><h3 class="font-serif" style="font-size:20px;color:white;margin:0 0 12px">Tambah Kategori</h3><form id="categoryForm"><label class="label-premium">Nama Kategori</label><input id="newCategory" class="field" placeholder="Contoh: Sales"><button class="btn btn-gold" style="margin-top:12px;width:100%" type="submit"><i class="fa-solid fa-plus"></i> Tambah</button></form></div><div class="premium-card table-wrap"><table class="data-table"><thead><tr><th>Kategori</th><th>Jumlah Aplikasi</th><th style="text-align:right">Aksi</th></tr></thead><tbody>${state.categories.map(c=>`<tr><td><b>${esc(c)}</b></td><td>${state.apps.filter(a=>a.category===c).length}</td><td style="text-align:right"><button class="icon-btn" onclick="deleteCategory('${esc(c)}')"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('')}</tbody></table></div></div>`;
+  setTimeout(()=>{ const f=$('categoryForm'); if(f) f.onsubmit = handleCategorySubmit; },0);
+}
+function renderActivity(){
+  $('activityView').innerHTML = pageHead('Usage History','Riwayat Buka Aplikasi','Catatan lokal untuk melihat aplikasi apa saja yang dibuka melalui portal ini.') +
+  `<div class="premium-card table-wrap"><table class="data-table"><thead><tr><th>Waktu</th><th>Aplikasi</th><th>URL</th><th>Kategori</th></tr></thead><tbody>${state.activity.map(a=>`<tr><td>${esc(formatDateTime(a.time))}</td><td><b>${esc(a.name)}</b></td><td style="max-width:380px;overflow:hidden;text-overflow:ellipsis">${esc(a.url)}</td><td>${esc(a.category || '-')}</td></tr>`).join('') || `<tr><td colspan="4">${emptyState('Belum ada riwayat','Buka aplikasi dari launcher untuk membuat riwayat.')}</td></tr>`}</tbody></table></div><button class="btn btn-danger" style="margin-top:14px" onclick="clearActivity()"><i class="fa-solid fa-trash"></i> Hapus Riwayat</button>`;
+}
+function renderBackup(){
+  $('backupView').innerHTML = pageHead('Data Portability','Backup & Import','Ekspor konfigurasi portal sebagai file JSON agar bisa dipindahkan ke perangkat lain. Import akan mengganti katalog lokal saat ini.') +
+  `<div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="premium-card" style="padding:18px"><h3 class="font-serif" style="font-size:20px;color:white;margin:0">Export JSON</h3><p class="hint">Simpan semua aplikasi, kategori, pengaturan, dan riwayat.</p><button class="btn btn-gold" style="margin-top:12px;width:100%" onclick="exportJson()"><i class="fa-solid fa-download"></i> Export</button></div><div class="premium-card" style="padding:18px"><h3 class="font-serif" style="font-size:20px;color:white;margin:0">Import JSON</h3><p class="hint">Pilih file backup LuxeHub untuk dipulihkan.</p><input type="file" id="importFile" class="field" accept="application/json" style="margin-top:12px"><button class="btn btn-outline" style="margin-top:12px;width:100%" onclick="importJson()"><i class="fa-solid fa-upload"></i> Import</button></div><div class="premium-card" style="padding:18px"><h3 class="font-serif" style="font-size:20px;color:white;margin:0">Reset Data</h3><p class="hint">Mengembalikan katalog ke aplikasi default. Login owner tetap tersedia.</p><button class="btn btn-danger" style="margin-top:12px;width:100%" onclick="resetPortalData()"><i class="fa-solid fa-broom"></i> Reset Portal</button></div></div>`;
+}
+function renderSettings(){
+  $('settingsView').innerHTML = pageHead('Portal Preference','Pengaturan Portal','Atur identitas tampilan dan perilaku pembukaan aplikasi.') +
+  `<div class="premium-card" style="padding:18px"><form id="settingsForm" class="form-grid"><div class="span-2"><label class="label-premium">Nama Perusahaan / Brand</label><input id="companyName" class="field" value="${esc(settings.companyName)}"></div><div class="span-2"><label class="label-premium">Judul Portal</label><input id="portalTitle" class="field" value="${esc(settings.portalTitle)}"></div><div><label class="label-premium">Mode Buka Link</label><select id="openMode" class="field"><option value="viewer" ${settings.openMode==='viewer'?'selected':''}>App Viewer / Di Dalam Portal</option><option value="newtab" ${settings.openMode==='newtab'?'selected':''}>Tab Baru</option><option value="same" ${settings.openMode==='same'?'selected':''}>Tab Yang Sama</option></select><p class="hint" style="margin-top:6px">Mode App Viewer menjaga address bar tetap di portal. Situs tertentu bisa menolak iframe.</p></div><div><label class="label-premium">Aplikasi Nonaktif</label><select id="lockInactive" class="field"><option value="true" ${settings.lockInactive?'selected':''}>Sembunyikan di Launcher</option><option value="false" ${!settings.lockInactive?'selected':''}>Tetap Tampilkan</option></select></div><div class="span-2"><label class="label-premium">Password Owner Baru</label><input id="newOwnerPassword" type="password" class="field" autocomplete="new-password" placeholder="Kosongkan jika tidak diganti"><p class="hint" style="margin-top:6px">Simpan minimal 6 karakter. Session tetap tidak disimpan permanen.</p></div><div class="span-4"><button class="btn btn-gold" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan</button></div></form></div><div class="premium-card" style="padding:18px;margin-top:14px"><h3 class="font-serif" style="font-size:20px;color:white;margin:0">Catatan Keamanan</h3><p class="hint" style="margin-top:8px">Portal ini adalah connector/launcher. Jangan simpan password aplikasi eksternal di nama, deskripsi, atau URL. Untuk penggunaan kantor, host file ini di lokasi internal/terpercaya.</p></div>`;
+  setTimeout(()=>{ const f=$('settingsForm'); if(f) f.onsubmit = handleSettingsSubmit; },0);
+}
+function emptyState(title,desc){ return `<div class="empty-state"><i class="fa-solid fa-box-open"></i><div style="font-weight:800;color:#E5E5E5;margin-bottom:4px">${esc(title)}</div><div class="hint">${esc(desc)}</div></div>`; }
+function renderAll(){
+  if(!sessionUser) return;
+  renderDashboard(); renderLauncher(); renderViewer(); renderManage(); renderCategories(); renderActivity(); renderBackup(); renderSettings();
+}
+function openAppModal(){
+  editingAppId = null; $('modalTitle').textContent='Tambah Aplikasi'; $('appForm').reset(); $('appId').value=''; refreshCategorySelect(); $('appStatus').value='Aktif'; $('appFavorite').value='false'; $('appIcon').value='fa-layer-group'; $('appModal').classList.add('show');
+}
+function closeAppModal(){ $('appModal').classList.remove('show'); }
+function refreshCategorySelect(){ $('appCategory').innerHTML = state.categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join(''); }
+function editApp(id){
+  const app = state.apps.find(a=>a.id===id); if(!app) return;
+  editingAppId = id; refreshCategorySelect(); $('modalTitle').textContent='Edit Aplikasi'; $('appId').value=app.id; $('appName').value=app.name; $('appUrl').value=app.url; $('appCategory').value=app.category; $('appStatus').value=app.status; $('appIcon').value=app.icon || 'fa-layer-group'; $('appFavorite').value=String(!!app.favorite); $('appDescription').value=app.description || ''; $('appModal').classList.add('show');
+}
+function handleAppSubmit(e){
+  e.preventDefault();
+  const payload = { name:$('appName').value.trim(), url:normalizeUrl($('appUrl').value), category:$('appCategory').value, status:$('appStatus').value, icon:$('appIcon').value, favorite:$('appFavorite').value==='true', description:$('appDescription').value.trim(), updatedAt:nowISO() };
+  if(!payload.name || !payload.url){ toast('Nama dan URL wajib diisi.', 'error'); return; }
+  try{ new URL(payload.url); }catch(err){ toast('URL tidak valid.', 'error'); return; }
+  if(editingAppId){
+    state.apps = state.apps.map(a => a.id === editingAppId ? {...a, ...payload} : a);
+    toast('Aplikasi berhasil diperbarui.');
+  }else{
+    state.apps.unshift({id:uid(), ...payload, createdAt:nowISO()});
+    toast('Aplikasi baru berhasil ditambahkan.');
+  }
+  saveState(); closeAppModal(); renderAll();
+}
+function openApp(id){
+  const app = state.apps.find(a=>a.id===id); if(!app) return;
+  if(app.status !== 'Aktif'){ toast('Aplikasi nonaktif tidak bisa dibuka.', 'error'); return; }
+  state.activity.unshift({id:uid(), appId:app.id, name:app.name, url:app.url, category:app.category, time:nowISO()});
+  state.activity = state.activity.slice(0,100);
+  saveState();
+  if(settings.openMode === 'same'){
+    window.location.href = app.url;
+    return;
+  }
+  if(settings.openMode === 'newtab'){
+    renderAll();
+    window.open(app.url, '_blank', 'noopener,noreferrer');
+    return;
+  }
+  launchInViewer(app);
+}
+function launchInViewer(app){
+  currentViewerAppId = app.id;
+  currentView = 'viewer';
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  $('viewerView').classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(btn => btn.classList.toggle('active', btn.dataset.view === 'viewer'));
+  closeSidebar();
+  renderAll();
+  toast('Aplikasi dibuka melalui App Viewer.');
+}
+function clearViewer(){ currentViewerAppId = null; renderAll(); }
+function reloadViewer(){ const f = $('appViewerFrame'); if(f) f.src = f.src; }
+function openViewerFallback(){
+  const app = state.apps.find(a => a.id === currentViewerAppId);
+  if(!app){ toast('Belum ada aplikasi yang dipilih.', 'error'); return; }
+  window.open(app.url, '_blank', 'noopener,noreferrer');
+  toast('Fallback membuka tab baru. URL akan terlihat di browser.', 'error');
+}
+function copyAppUrl(id){ const app=state.apps.find(a=>a.id===id); if(!app) return; navigator.clipboard.writeText(app.url).then(()=>toast('Link disalin.')).catch(()=>toast('Gagal menyalin link.', 'error')); }
+function toggleFavorite(id){ state.apps = state.apps.map(a=>a.id===id?{...a,favorite:!a.favorite,updatedAt:nowISO()}:a); saveState(); renderAll(); }
+function deleteApp(id){ const app=state.apps.find(a=>a.id===id); if(!app) return; if(confirm(`Hapus aplikasi ${app.name}?`)){ state.apps = state.apps.filter(a=>a.id!==id); saveState(); renderAll(); toast('Aplikasi dihapus.'); } }
+function showQr(id){
+  const app=state.apps.find(a=>a.id===id); if(!app) return;
+  currentQrUrl = app.url; $('qrTitle').textContent = app.name; $('qrUrl').textContent = app.url;
+  $('qrImage').src = 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=' + encodeURIComponent(app.url);
+  $('qrModal').classList.add('show');
+}
+function closeQrModal(){ $('qrModal').classList.remove('show'); }
+function copyQrUrl(){ if(currentQrUrl) navigator.clipboard.writeText(currentQrUrl).then(()=>toast('Link QR disalin.')); }
+function handleCategorySubmit(e){ e.preventDefault(); const input=$('newCategory'); const name=input.value.trim(); if(!name) return; if(state.categories.some(c=>c.toLowerCase()===name.toLowerCase())){ toast('Kategori sudah ada.', 'error'); return; } state.categories.push(name); input.value=''; saveState(); renderAll(); toast('Kategori ditambahkan.'); }
+function deleteCategory(name){ const used=state.apps.some(a=>a.category===name); if(used){ toast('Kategori masih dipakai aplikasi.', 'error'); return; } if(confirm(`Hapus kategori ${name}?`)){ state.categories=state.categories.filter(c=>c!==name); saveState(); renderAll(); toast('Kategori dihapus.'); } }
+function clearActivity(){ if(confirm('Hapus semua riwayat buka aplikasi?')){ state.activity=[]; saveState(); renderAll(); toast('Riwayat dihapus.'); } }
+function exportJson(){
+  const data = { app:'LuxeHub Premium App Connector', version:'1.0', exportedAt:nowISO(), state, settings };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `luxehub_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(a.href); toast('Backup JSON dibuat.');
+}
+function importJson(){
+  const file = $('importFile').files[0]; if(!file){ toast('Pilih file JSON dulu.', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(!data.state || !Array.isArray(data.state.apps)) throw new Error('Format tidak valid');
+      if(!confirm('Import akan mengganti data portal lokal saat ini. Lanjutkan?')) return;
+      state = {...state, ...data.state}; settings = {...settings, ...(data.settings || {})}; saveState(); saveSettings(); renderAll(); toast('Import berhasil.');
+    }catch(err){ toast('File JSON tidak valid.', 'error'); }
+  };
+  reader.readAsText(file);
+}
+function resetPortalData(){ if(confirm('Reset portal ke data default?')){ state = {apps:[...defaultApps],categories:[...defaultCategories],activity:[]}; saveState(); renderAll(); toast('Portal dikembalikan ke default.'); } }
+async function handleSettingsSubmit(e){
+  e.preventDefault();
+  settings.companyName = $('companyName').value.trim() || 'LuxeHub'; settings.portalTitle = $('portalTitle').value.trim() || 'Premium App Connector'; settings.openMode = $('openMode').value; settings.lockInactive = $('lockInactive').value === 'true';
+  const newPass = $('newOwnerPassword').value.trim();
+  if(newPass){ if(newPass.length < 6){ toast('Password minimal 6 karakter.', 'error'); return; } localStorage.setItem(USER_HASH_KEY, await sha256(newPass)); $('newOwnerPassword').value=''; }
+  saveSettings(); toast('Pengaturan tersimpan.'); renderAll();
+}
+function exportCsvRows(rows, filename){
+  const csv = rows.map(r => r.map(cell => `"${String(cell ?? '').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click(); URL.revokeObjectURL(a.href);
+}
+function formatDateTime(iso){ if(!iso) return '-'; return new Date(iso).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}); }
+
+window.openAppModal = openAppModal; window.closeAppModal = closeAppModal; window.editApp = editApp; window.deleteApp = deleteApp; window.openApp = openApp; window.copyAppUrl = copyAppUrl; window.toggleFavorite = toggleFavorite; window.showQr = showQr; window.closeQrModal = closeQrModal; window.copyQrUrl = copyQrUrl; window.setCategoryFilter = setCategoryFilter; window.deleteCategory = deleteCategory; window.clearActivity = clearActivity; window.exportJson = exportJson; window.importJson = importJson; window.resetPortalData = resetPortalData; window.clearViewer = clearViewer; window.reloadViewer = reloadViewer; window.openViewerFallback = openViewerFallback; window.switchView = switchView; window.logout = logout;
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadSettings(); loadState(); updateClock(); setInterval(updateClock, 1000);
+  $('loginForm').addEventListener('submit', async e => { e.preventDefault(); const ok = await login($('loginUsername').value, $('loginPassword').value); $('loginPassword').value=''; if(!ok) toast('Username atau password salah.', 'error'); });
+  $('openSidebarBtn').addEventListener('click', openSidebar); $('closeSidebarBtn').addEventListener('click', closeSidebar); $('sidebarBackdrop').addEventListener('click', closeSidebar);
+  document.querySelectorAll('.nav-link').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
+  $('globalSearch').addEventListener('input', () => renderAll()); $('appForm').addEventListener('submit', handleAppSubmit);
+  document.addEventListener('keydown', e => { if(e.key === 'Escape'){ closeAppModal(); closeQrModal(); closeSidebar(); } });
+});
+</script>
+</body>
+</html>
