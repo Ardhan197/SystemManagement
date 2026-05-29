@@ -3,7 +3,7 @@
 <head>
 <base target="_top">
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>LuxeHub Enterprise Portal - Google Sheets Database</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,6 +43,257 @@ body{font-family:'Inter',sans-serif;background:#121212;color:#E5E5E5;overflow:hi
 @media (min-width:1024px){.sidebar{position:relative;transform:none;flex-shrink:0}.sidebar-backdrop{display:none}.main{width:calc(100% - 248px)}}
 @media (max-width:1180px){.summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.app-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.span-3,.span-4{grid-column:span 2}}
 @media (max-width:760px){body{overflow:hidden}.topbar{height:auto;min-height:68px;flex-wrap:wrap;padding:12px}.search-wrap{order:4;max-width:none;flex-basis:100%}.status-pill span{display:none}.content{padding:16px}.page-head{display:block}.page-head .btn{width:100%;margin-top:14px}.page-title{font-size:26px}.summary-grid,.app-grid,.form-grid{grid-template-columns:1fr}.span-2,.span-3,.span-4{grid-column:span 1}.app-card{min-height:auto}.table-wrap{border-radius:16px}.sidebar{width:86vw;max-width:280px}.hidden-mobile{display:none!important}.toast{left:16px;right:16px}.toast-item{min-width:0}.btn{width:100%}.card-actions .btn,.card-actions .icon-btn{width:auto}.data-table th,.data-table td{padding:12px}.login-card{padding:22px}.modal{align-items:flex-end;padding:0}.modal-box{border-radius:22px 22px 0 0;max-height:92vh}.viewer-toolbar{top:8px;left:8px;right:8px;align-items:flex-start;flex-direction:column}.viewer-actions{width:100%;flex-wrap:wrap}.viewer-actions .btn{width:auto}.viewer-warning{left:8px;right:8px;bottom:8px}.bar-row{grid-template-columns:1fr}.bar-row .hint{text-align:left!important}}
+
+
+/* =========================================================
+   RESPONSIVE UPGRADE 3.1
+   Target: desktop, laptop, tablet, foldable, Android, iPhone.
+   Fokus: teks tidak keluar area, grid adaptif, tabel mobile-card,
+   modal aman di layar kecil, viewer full-screen stabil.
+========================================================= */
+:root{
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --app-height: 100dvh;
+  --content-pad: clamp(14px, 2.4vw, 24px);
+  --card-pad: clamp(14px, 2vw, 18px);
+}
+html{
+  width:100%;
+  min-width:320px;
+  overflow:hidden;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+body{
+  width:100%;
+  min-width:320px;
+  min-height:100vh;
+  min-height:100dvh;
+  overscroll-behavior:none;
+}
+*,*::before,*::after{min-width:0}
+body,button,input,select,textarea{
+  -webkit-font-smoothing:antialiased;
+  text-rendering:geometricPrecision;
+}
+button,input,select,textarea{font:inherit}
+img,svg,video,canvas,iframe{max-width:100%}
+h1,h2,h3,h4,h5,h6,p,span,div,td,th,label,a,button{
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+.app-shell,.main{height:var(--app-height,100dvh);max-height:var(--app-height,100dvh)}
+.content{
+  padding:var(--content-pad);
+  padding-bottom:calc(var(--content-pad) + var(--safe-bottom));
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+.premium-card,.summary-card,.app-card,.announcement,.modal-box,.login-card{overflow-wrap:anywhere}
+.premium-card{padding:var(--card-pad)}
+.page-head{align-items:flex-start}
+.page-head>div:first-child{min-width:0;flex:1}
+.page-title{font-size:clamp(24px,3.3vw,34px)}
+.page-desc{font-size:clamp(11px,1.35vw,13px)}
+.login-screen{
+  padding:calc(18px + var(--safe-top)) calc(18px + var(--safe-right)) calc(18px + var(--safe-bottom)) calc(18px + var(--safe-left));
+  min-height:var(--app-height,100dvh);
+}
+.login-card{
+  width:min(510px,100%);
+  max-height:calc(var(--app-height,100dvh) - 28px - var(--safe-top) - var(--safe-bottom));
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.login-title{font-size:clamp(27px,7vw,34px);line-height:1.06}
+.login-sub{font-size:clamp(11px,3.2vw,12px)}
+.topbar{
+  min-width:0;
+  padding-left:calc(16px + var(--safe-left));
+  padding-right:calc(16px + var(--safe-right));
+}
+.search-wrap,.search-input,.status-pill{min-width:0}
+.status-pill{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar{
+  padding-top:var(--safe-top);
+  padding-bottom:var(--safe-bottom);
+  height:var(--app-height,100dvh);
+  max-height:var(--app-height,100dvh);
+}
+.sidebar-header{min-height:68px;height:auto}
+.brand{max-width:100%}
+.brand>div:last-child{min-width:0;overflow:hidden}
+#brandName,#brandSub,.nav-link span,#sidebarUser,#sidebarRole{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.summary-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))!important}
+.app-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))!important}
+.form-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))!important}
+.content .view>.grid[style*="grid-template-columns"],
+.content .view .grid[style*="grid-template-columns"]{
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))!important;
+}
+.summary-card,.app-card{min-width:0}
+.app-card{min-height:auto}
+.app-title{font-size:clamp(14px,2vw,16px)}
+.app-desc{min-height:0}
+.private-link-label,.tag,.hint,.help{overflow-wrap:anywhere}
+.card-actions{width:100%}
+.card-actions .btn{max-width:100%}
+.table-wrap{
+  width:100%;
+  max-width:100%;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+}
+.data-table{
+  min-width:760px;
+  white-space:normal;
+  table-layout:auto;
+}
+.data-table th,.data-table td{
+  vertical-align:top;
+  max-width:360px;
+  white-space:normal;
+}
+.data-table td:last-child,.data-table th:last-child{max-width:none}
+.modal{
+  padding:calc(16px + var(--safe-top)) calc(16px + var(--safe-right)) calc(16px + var(--safe-bottom)) calc(16px + var(--safe-left));
+}
+.modal-box{
+  width:min(760px,100%);
+  max-height:calc(var(--app-height,100dvh) - 32px - var(--safe-top) - var(--safe-bottom));
+  -webkit-overflow-scrolling:touch;
+}
+.modal-head{gap:14px}
+.modal-head>div{min-width:0}
+.modal-body{padding:clamp(16px,2.5vw,20px)}
+.field{min-height:44px}
+textarea.field{min-height:96px}
+.copy-chip{max-width:100%;white-space:normal;line-height:1.25}
+.logo-preview{max-width:100%}
+.viewer-overlay{height:var(--app-height,100dvh)}
+.viewer-frame-wrap{inset:0}
+.viewer-frame{min-width:100%;min-height:100%}
+.viewer-toolbar{
+  top:calc(12px + var(--safe-top));
+  left:calc(12px + var(--safe-left));
+  right:calc(12px + var(--safe-right));
+  max-width:calc(100vw - 24px - var(--safe-left) - var(--safe-right));
+}
+.viewer-title-wrap{min-width:0;max-width:100%}
+.viewer-warning{
+  left:calc(12px + var(--safe-left));
+  right:calc(12px + var(--safe-right));
+  bottom:calc(12px + var(--safe-bottom));
+}
+.toast{
+  right:calc(16px + var(--safe-right));
+  bottom:calc(16px + var(--safe-bottom));
+}
+@supports not (height:100dvh){
+  .app-shell,.main,.sidebar,.login-screen,.viewer-overlay{height:100vh;max-height:100vh}
+}
+@media (max-width:1180px){
+  .content .view>.grid[style*="grid-template-columns"],
+  .content .view .grid[style*="grid-template-columns"]{
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))!important;
+  }
+}
+@media (max-width:900px){
+  .topbar{height:auto;min-height:68px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+  .search-wrap{order:5;flex-basis:100%;max-width:none}
+  .status-pill{margin-left:auto}
+  .page-head{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:18px}
+  .page-head .btn{width:100%}
+  .summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .app-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .span-3,.span-4{grid-column:1/-1!important}
+}
+@media (max-width:760px){
+  body{overflow:hidden}
+  .hidden-mobile{display:none!important}
+  .content{padding:16px;padding-bottom:calc(16px + var(--safe-bottom))}
+  .sidebar{width:min(86vw,300px)}
+  .sidebar-header{padding:12px 14px}
+  .sidebar-nav-wrap{padding:10px 8px}
+  .nav-link{min-height:44px;font-size:11px}
+  .btn{min-height:44px;white-space:normal;letter-spacing:.11em;padding:.72rem .82rem}
+  .icon-btn{width:40px;height:40px;flex:0 0 40px}
+  .field,.search-input{font-size:16px}
+  .search-input{height:44px}
+  .status-pill{height:38px;padding:0 11px;font-size:9px;letter-spacing:.11em}
+  .page-title{font-size:clamp(24px,8vw,30px)}
+  .page-desc{max-width:100%}
+  .summary-grid,.app-grid,.form-grid{grid-template-columns:1fr!important}
+  .span-2,.span-3,.span-4{grid-column:1/-1!important}
+  .summary-card{padding:16px}
+  .summary-card .num{font-size:26px}
+  .app-card{padding:16px}
+  .app-icon{width:46px;height:46px}
+  .card-actions{display:grid;grid-template-columns:1fr;gap:8px}
+  .card-actions .btn,.card-actions .icon-btn{width:100%}
+  .copy-chip{flex:1 1 auto;justify-content:center}
+  .bar-row{grid-template-columns:1fr!important;gap:7px}
+  .bar-row .hint{text-align:left!important}
+  .modal{align-items:flex-end;padding:0;padding-top:calc(12px + var(--safe-top))}
+  .modal-box{border-radius:22px 22px 0 0;max-height:calc(var(--app-height,100dvh) - var(--safe-top));width:100%}
+  .modal-head{padding:16px;align-items:flex-start}
+  .modal-head h3{font-size:20px!important}
+  .modal-body{padding:16px;padding-bottom:calc(18px + var(--safe-bottom))}
+  .toast{left:calc(12px + var(--safe-left));right:calc(12px + var(--safe-right));bottom:calc(12px + var(--safe-bottom))}
+  .toast-item{min-width:0;width:100%}
+  .viewer-toolbar{top:calc(8px + var(--safe-top));left:8px;right:8px;max-width:calc(100vw - 16px);align-items:stretch;flex-direction:column;gap:10px}
+  .viewer-actions{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .viewer-actions .btn{width:100%;padding:.66rem .5rem;font-size:9px}
+  .viewer-title-wrap{width:100%}
+  .viewer-warning{left:8px;right:8px;bottom:calc(8px + var(--safe-bottom));font-size:9px}
+}
+@media (max-width:700px){
+  .table-wrap{overflow:visible;background:transparent;border:0;box-shadow:none}
+  .data-table{min-width:0;width:100%;display:block;border-collapse:separate;border-spacing:0;background:transparent}
+  .data-table thead{display:none}
+  .data-table tbody{display:grid;gap:12px;width:100%}
+  .data-table tr{display:block;width:100%;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:linear-gradient(180deg,rgba(34,34,34,.9),rgba(26,26,26,.96));overflow:hidden;box-shadow:0 8px 26px rgba(0,0,0,.28)}
+  .data-table td{display:grid;grid-template-columns:minmax(96px,34%) minmax(0,1fr);gap:10px;align-items:start;width:100%;max-width:none;padding:11px 13px;border-top:1px solid rgba(255,255,255,.06);font-size:12px;text-align:left!important;white-space:normal}
+  .data-table tr td:first-child{border-top:0}
+  .data-table td::before{content:attr(data-label);font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--gold);font-weight:800;line-height:1.4}
+  .data-table td[colspan]{display:block;text-align:center!important}
+  .data-table td[colspan]::before{display:none}
+  .data-table td .icon-btn{margin:2px;width:38px;height:38px;display:inline-flex;vertical-align:middle}
+}
+@media (max-width:520px){
+  .login-screen{padding:12px}
+  .login-card{padding:20px;border-radius:24px;max-height:calc(var(--app-height,100dvh) - 24px)}
+  .login-logo{width:54px;height:54px;border-radius:20px}
+  .topbar{padding:10px 12px}
+  .status-pill{max-width:calc(100vw - 118px)}
+  .page-head .btn{font-size:9px}
+  .summary-grid{grid-template-columns:1fr 1fr!important;gap:10px}
+  .summary-card{padding:13px;border-radius:16px}
+  .summary-card .ico{width:34px;height:34px;margin-bottom:9px}
+  .summary-card .num{font-size:23px}
+  .summary-card .lbl{font-size:8.5px;letter-spacing:.1em}
+  .app-grid{gap:12px}
+  .data-table td{grid-template-columns:1fr;gap:5px}
+  .data-table td::before{margin-bottom:0}
+  .viewer-actions{grid-template-columns:1fr}
+  .viewer-actions .btn{font-size:10px}
+}
+@media (max-width:380px){
+  .content{padding:12px;padding-bottom:calc(12px + var(--safe-bottom))}
+  .summary-grid{grid-template-columns:1fr!important}
+  .btn{font-size:9px;letter-spacing:.08em}
+  .tag{font-size:8.5px;letter-spacing:.08em}
+  .viewer-mask{display:none}
+}
+@media (hover:none){
+  .card-hover:hover{transform:none;box-shadow:0 4px 24px rgba(0,0,0,.32)}
+  .btn-gold:hover{transform:none}
+}
+
 </style>
 </head>
 <body>
@@ -133,7 +384,7 @@ body{font-family:'Inter',sans-serif;background:#121212;color:#E5E5E5;overflow:hi
 
 <script>
 const STORAGE_KEY = 'luxehub_enterprise_portal_v2_cache';
-const LEGACY_STORAGE_KEY = 'luxehub_portal_v1';
+const LEGACY_STORAGE_KEY = 'luxehub_portal_v2';
 const DB_MODE = { SHEETS:'sheets', LOCAL:'local' };
 let database = { mode: DB_MODE.LOCAL, online:false, message:'Mode lokal', spreadsheetUrl:'', lastSync:'' };
 let saveTimer = null;
@@ -436,6 +687,7 @@ function renderAll(){
   renderDashboard(); renderLauncher();
   if(minRoleAllowed('admin')){ renderManage(); renderUsers(); renderAnnouncements(); renderCategories(); renderActivity(); renderSettings(); }
   if(minRoleAllowed('owner')) renderBackup();
+  requestAnimationFrame(enhanceResponsiveUI);
 }
 function refreshRoleChecks(containerId, selectedRoles){ const el=$(containerId); el.innerHTML = ROLES.map(r=>`<label class="tag info" style="cursor:pointer"><input type="checkbox" value="${r}" ${selectedRoles.includes(r)?'checked':''}> ${ROLE_LABEL[r]}</label>`).join(''); }
 function getCheckedRoles(containerId){ return Array.from($(containerId).querySelectorAll('input[type="checkbox"]:checked')).map(x=>x.value); }
@@ -495,9 +747,32 @@ function resetPortalData(){ if(confirm('Reset semua data portal ke default?')){ 
 function handleLogoUpload(e){ const file=e.target.files[0]; if(!file) return; if(file.size > 600*1024){ toast('Ukuran logo maksimal 600 KB.','error'); return; } const reader=new FileReader(); reader.onload=()=>{ portal.settings.logoData=reader.result; savePortal(); applyBranding(); renderSettings(); toast('Logo berhasil diupload.'); }; reader.readAsDataURL(file); }
 function removeLogo(){ portal.settings.logoData=''; savePortal(); applyBranding(); renderSettings(); toast('Logo dihapus.'); }
 function handleSettingsSubmit(e){ e.preventDefault(); portal.settings.companyName=$('companyName').value.trim() || 'LuxeHub'; portal.settings.portalTitle=$('portalTitle').value.trim() || 'LuxeHub Access Portal'; portal.settings.portalSubtitle=$('portalSubtitle').value.trim() || 'Enterprise App Connector'; portal.settings.lockInactive=$('lockInactive').value==='true'; portal.settings.showViewerWarning=$('showViewerWarning').value==='true'; portal.settings.proxyEnabled=$('proxyEnabled').value==='true'; portal.settings.proxyBaseUrl=$('proxyBaseUrl').value.trim(); if(portal.settings.proxyEnabled && !portal.settings.proxyBaseUrl){ toast('Proxy Base URL wajib diisi jika proxy enabled.','error'); return; } logActivity({action:'UPDATE_SETTINGS',status:'success',message:'Pengaturan portal diperbarui'}); savePortal(); applyBranding(); renderAll(); toast('Pengaturan tersimpan.'); }
+
+function setViewportVars(){
+  const h = window.innerHeight || document.documentElement.clientHeight || 0;
+  if(h) document.documentElement.style.setProperty('--app-height', h + 'px');
+}
+function enhanceResponsiveTables(){
+  document.querySelectorAll('.data-table').forEach(table=>{
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th=>th.textContent.trim().replace(/\s+/g,' '));
+    table.querySelectorAll('tbody tr').forEach(row=>{
+      Array.from(row.children).forEach((cell,index)=>{
+        if(!cell.hasAttribute('colspan')) cell.setAttribute('data-label', headers[index] || 'Data');
+      });
+    });
+  });
+}
+function enhanceResponsiveUI(){
+  setViewportVars();
+  enhanceResponsiveTables();
+}
+
 window.logout=logout; window.switchView=switchView; window.openAppModal=openAppModal; window.closeAppModal=closeAppModal; window.editApp=editApp; window.deleteApp=deleteApp; window.attemptOpenApp=attemptOpenApp; window.toggleFavorite=toggleFavorite; window.setCategoryFilter=setCategoryFilter; window.closeViewer=closeViewer; window.reloadViewer=reloadViewer; window.requestViewerFullscreen=requestViewerFullscreen; window.closePinModal=closePinModal; window.openUserModal=openUserModal; window.closeUserModal=closeUserModal; window.editUser=editUser; window.deleteUser=deleteUser; window.openAnnouncementModal=openAnnouncementModal; window.closeAnnouncementModal=closeAnnouncementModal; window.editAnnouncement=editAnnouncement; window.deleteAnnouncement=deleteAnnouncement; window.deleteCategory=deleteCategory; window.clearActivity=clearActivity; window.exportJson=exportJson; window.importJson=importJson; window.resetPortalData=resetPortalData; window.removeLogo=removeLogo;
 
 document.addEventListener('DOMContentLoaded',async()=>{
+  setViewportVars();
+  window.addEventListener('resize', setViewportVars, {passive:true});
+  window.addEventListener('orientationchange', ()=>setTimeout(enhanceResponsiveUI, 250), {passive:true});
   await loadPortal(); applyBranding(); updateClock(); setInterval(updateClock,1000);
   $('loginForm').addEventListener('submit',async e=>{ e.preventDefault(); const ok=await login($('loginUsername').value,$('loginPassword').value); $('loginPassword').value=''; if(!ok) toast('Username/password salah atau user nonaktif.','error'); });
   $('openSidebarBtn').addEventListener('click',openSidebar); $('closeSidebarBtn').addEventListener('click',closeSidebar); $('sidebarBackdrop').addEventListener('click',closeSidebar);
